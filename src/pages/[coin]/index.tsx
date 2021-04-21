@@ -1,9 +1,7 @@
-import React, { useEffect, useState } from "react";
-import ReactDOM from "react-dom";
+import React from "react";
 import Head from "next/head";
 import { GetServerSideProps } from "next";
-import axios, { AxiosError, AxiosResponse } from "axios";
-import * as htmlToImage from "html-to-image";
+import axios, { AxiosResponse } from "axios";
 
 import Quote from "@interfaces/Quote";
 
@@ -14,9 +12,10 @@ const formatter = new Intl.NumberFormat("en-us", {
 });
 
 const fetcher = (url: string) =>
-  axios.get(`${process.env.HOST}${url}`).then((r: AxiosResponse) => r.data);
+  axios.get(process.env.HOST + url).then((r: AxiosResponse) => r.data);
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
+  console.log(process.env.HOST);
   const quote: Quote = await fetcher(
     "/api/cmc/quote?coin=" + context.params.coin
   );
@@ -63,7 +62,11 @@ export default function Home({
         ></meta>
         <meta
           property="og:image"
-          content={`${process.env.HOST}${image}`}
+          content={
+            (typeof window !== "undefined"
+              ? window.location.host
+              : "http://localhost:3000") + image
+          }
         ></meta>
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
